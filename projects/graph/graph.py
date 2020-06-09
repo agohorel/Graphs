@@ -10,6 +10,8 @@ class Graph:
 
     def __init__(self):
         self.vertices = {}
+        self.visited = set()
+        self.path = []
 
     def add_vertex(self, vertex_id):
         self.vertices[vertex_id] = set()
@@ -101,7 +103,32 @@ class Graph:
         starting_vertex to destination_vertex in
         breath-first order.
         """
-        pass  # TODO
+        # Create an empty queue and enqueue A PATH TO the starting vertex ID
+        q = Queue()
+        q.enqueue([starting_vertex])
+        # Create a Set to store visited vertices
+        visited = set()
+        # While the queue is not empty...
+        while q.size() > 0:
+            # Dequeue the first PATH
+            path = q.dequeue()
+            # Grab the last vertex from the PATH
+            last = path[-1]
+            # If that vertex has not been visited...
+            if last not in visited:
+                # CHECK IF IT'S THE TARGET
+                if last == destination_vertex:
+                    # IF SO, RETURN PATH
+                    return path
+                    # Mark it as visited...
+                visited.add(last)
+                # Then add A PATH TO its neighbors to the back of the queue
+                for neighbor in self.get_neighbors(last):
+                    # COPY THE PATH
+                    new_path = [*path]
+                    # APPEND THE NEIGHOR TO THE BACK
+                    new_path.append(neighbor)
+                    q.enqueue(new_path)
 
     def dfs(self, starting_vertex, destination_vertex):
         """
@@ -109,17 +136,82 @@ class Graph:
         starting_vertex to destination_vertex in
         depth-first order.
         """
-        pass  # TODO
+        s = Stack()
+        s.push([starting_vertex])
 
-    def dfs_recursive(self, starting_vertex, destination_vertex):
-        """
-        Return a list containing a path from
-        starting_vertex to destination_vertex in
-        depth-first order.
+        visited = set()
 
-        This should be done using recursion.
-        """
-        pass  # TODO
+        while s.size() > 0:
+            path = s.pop()
+            last = path[-1]
+
+            if last not in visited:
+                if last == destination_vertex:
+                    return path
+
+                visited.add(last)
+
+                for neighbor in self.get_neighbors(last):
+                    new_path = [*path]
+                    new_path.append(neighbor)
+                    s.push(new_path)
+
+
+    def dfs_recursive(self, starting_vertex, destination_vertex, visited=None, path=None):
+        # initial cases
+        if visited == None:
+            visited = set()
+
+        if path == None:
+            path = []
+
+
+        visited.add(starting_vertex)
+        new_path = [*path, starting_vertex]
+
+        # base case
+        if new_path[-1] == destination_vertex:
+            return new_path        
+
+        for neighbor in self.get_neighbors(starting_vertex):
+            if neighbor not in visited:
+                neighbor_path = self.dfs_recursive(neighbor, destination_vertex, visited, new_path)
+                # check if we have a valid path, preventing premature returning
+                if neighbor_path:
+                    return neighbor_path
+
+        
+
+    # def dfs_recursive(self, starting_vertex, destination_vertex):
+    #     """
+    #     Return a list containing a path from
+    #     starting_vertex to destination_vertex in
+    #     depth-first order.
+
+    #     This should be done using recursion.`
+    #     """
+    #     visited = set()
+    #     path = [starting_vertex]
+
+    #     def recurse(vert_id, visited, path):
+    #         # mark as visited
+    #         visited.add(vert_id)
+
+    #         for neighbor in self.get_neighbors(vert_id):
+    #             # only recurse for unvisited verts
+    #             if neighbor not in visited:
+    #                 new_path = [*path]
+    #                 new_path.append(neighbor)
+    #                 recurse(neighbor, visited, new_path)
+
+    #         # base case = match
+    #         if path[-1] == destination_vertex:
+    #             print("matching path: ", path)
+    #             return path
+
+    #     # return path
+    #     result = recurse(starting_vertex, visited, path)
+    #     return result
 
 
 if __name__ == '__main__':
